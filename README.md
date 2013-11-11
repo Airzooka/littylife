@@ -20,17 +20,18 @@ lwjgl_util.jar
 Change the Java library path to:
 
 ```
-x/lib/natives/y
-```
-Where x is the absolute path to the /lib folder, and y is windows, mac, or linux.
-
-If you're not using an IDE, the final command for compilation is:
-
-```
-javac -cp .:com/alexlitty/asynchrony/littylife/lib/slick.jar com/alexlitty/asynchrony/littylife/LittyLife.java
+<x>/com/alexlitty/asynchrony/littylife/lib/natives/<y>
 ```
 
-Play the game! I recommend breathing exercises before you begin, it's pretty hardcore:
+Where <x> is the absolute path to the repository, and <y> is either _windows_, _mac_, or _linux_.
+
+If you're not using an IDE, a compile command would look like this:
+
+```
+javac -cp .:com/alexlitty/asynchrony/littylife/lib/* com/alexlitty/asynchrony/littylife/LittyLife.java
+```
+
+Play the game! I do recommend some breathing exercises and a therapist before you begin:
 
 ```
 java -cp .:com/alexlitty/asynchrony/littylife/lib/* -Djava.library.path=x/com/alexlitty/asynchrony/littylife/lib/natives/y com/alexlitty/asynchrony/littylife/LittyLife
