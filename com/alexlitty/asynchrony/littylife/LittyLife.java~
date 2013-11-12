@@ -1,18 +1,16 @@
 package com.alexlitty.asynchrony.littylife;
 
 import java.util.Random;
-
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
 
 public class LittyLife extends BasicGame
 {
-    // Size of the game window.
     protected static int windowWidth = 600;
     protected static int windowHeight = 600;
     
@@ -26,7 +24,7 @@ public class LittyLife extends BasicGame
     // Stores the next generation of cells temporarily.
     protected boolean[] cellsTemp;
     
-    // Information to visually represent cells
+    // Information to visually represent cells.
     protected int cellWidth;
     protected int cellHeight;
     protected Color cellColorAlive;
@@ -44,7 +42,10 @@ public class LittyLife extends BasicGame
     /**
      * Initializes critical game components.
      *
-     * Prepares a grid of cells and their visual representations.
+     * Prepares a grid of cells for visual representation, and generates the
+     * random color for living cells.
+     *
+     * @param gc Game container automatically passed by Slick2D.
      */
     @Override
     public void init(GameContainer gc) throws SlickException {
@@ -54,7 +55,7 @@ public class LittyLife extends BasicGame
         cellWidth = windowWidth / gridColumns;
         cellHeight = windowHeight / gridRows;
 
-        // Create grids of cells, all dead by default
+        // Create grids of cells
         cellsTemp = new boolean[gridColumns * gridRows];
         cells = new boolean[gridColumns * gridRows];
         for (int i = 0; i < cells.length; i++) {
@@ -62,24 +63,38 @@ public class LittyLife extends BasicGame
         }
         
         // Prepare cell colors
-        cellColorAlive = new Color(255, 150, 20);
         cellColorDead = new Color(25, 25, 25);
+        cellColorAlive = new Color(
+            200 + gen.nextInt(50),
+            50 + gen.nextInt(200),
+            100 + gen.nextInt(100)
+        );
     }
     
     /**
+     * Find the index of a cell in an array, given its grid coordinate.
      *
+     * Expects a valid coordinate, otherwise the index will be invalid.
+     *
+     * @param  x Column of the cell.
+     * @param  y Row of the cell.
+     * @return   Array index of a particular cell.
+     * @see      #cells
+     * @see      #cellsTemp
      */
-    public int cellIndex(int x, int y) {
+    protected int cellIndex(int x, int y) {
         return x + (y * gridColumns);
     }
     
     /**
-     * Returns true if a particular cell is alive, false otherwise.
+     * Verifies whether a particular cell is alive or dead.
      *
-     * Parameters are x and y coordinates where the cell should lie visually,
-     * starting at (0, 0).
+     * If the coordinates are out of range, returns false.
      *
-     * If the coordinate is out of range of the grid, returns false.
+     * @param  x Column of the cell.
+     * @param  y Row of the cell.
+     * @return   True if the cell is alive, false otherwise.
+     * @see      #cells
      */
     protected boolean cellIsAlive(int x, int y) {
         if (x < 0 || y < 0 || x > (gridColumns - 1) || y > (gridColumns - 1)) {
@@ -90,6 +105,13 @@ public class LittyLife extends BasicGame
     
     /**
      * Counts the live neighbors around a given cell.
+     *
+     * Counting is performed diagonally and cardinally. The cell itself is not
+     * included.
+     *
+     * @param  x Column of the cell.
+     * @param  y Row of the cell.
+     * @return   Integer amount of live neighbors.
      */
     protected int cellNeighbors(int x, int y) {
         int neighbors = 0;
@@ -107,7 +129,15 @@ public class LittyLife extends BasicGame
     }
 
     /**
-     * Perform an update on the current game logic.
+     * Perform a logical update on all cells.
+     *
+     * If a live cell has two or three neighbors, it will live in the next
+     * generation, otherwise it will die. If a dead cell has three neighbors,
+     * it will live in the next generation.
+     *
+     * @param gc    Game container automatically passed by Slick2D.
+     * @param delta Milliseconds since this method was previously called.
+     * @see         #cellNeighbors(int x, int y)
      */
     @Override
     public void update(GameContainer gc, int delta) throws SlickException {
@@ -146,6 +176,9 @@ public class LittyLife extends BasicGame
      *
      * Instead of painting each individual cell, the dead cell color is painted
      * across the window. Living cells are then drawn individually.
+     *
+     * @param gc Game container automatically passed by Slick2D.
+     * @param g  Game screen graphics context.
      */
     @Override
     public void render(GameContainer gc, Graphics g) throws SlickException {
@@ -170,6 +203,8 @@ public class LittyLife extends BasicGame
 
     /**
      * Litty's Game of Life entry function.
+     *
+     * @param args Arguments passed into the program.
      */    
     public static void main(String[] args)
     {
@@ -178,6 +213,7 @@ public class LittyLife extends BasicGame
             app = new AppGameContainer(new LittyLife("Litty's Game of Life"));
             app.setDisplayMode(windowWidth, windowHeight, false);
             app.setTargetFrameRate(10);
+            app.setShowFPS(false);
             app.start();
         }
         catch (SlickException e) {
