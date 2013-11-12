@@ -10,22 +10,25 @@ import org.newdawn.slick.Image;
 
 public class LittyLife extends BasicGame
 {
-    // Size of the game window
+    // Size of the game window.
     protected static int windowWidth = 600;
     protected static int windowHeight = 600;
     
-    // Number of rows and columns on the cell grid
-    protected int gridColumns;
-    protected int gridRows;
+    // Number of rows and columns on the cell grid.
+    protected static int gridColumns = 60;
+    protected static int gridRows = 60;
 
     // Collection of boolean values representing cells. Dead if false.
-    public boolean[] cells;
+    protected boolean[] cells;
+    
+    // Stores the next generation of cells temporarily.
+    protected boolean[] cellsTemp;
     
     // Information to visually represent cells
     protected int cellWidth;
     protected int cellHeight;
-    protected Image cellImageAlive;
-    protected Image cellImageDead;
+    protected Color cellColorAlive;
+    protected Color cellColorDead;
     
     /**
      * Game constructor. Initializes the class, not the game.
@@ -43,7 +46,9 @@ public class LittyLife extends BasicGame
      */
     @Override
     public void init(GameContainer gc) throws SlickException {
-        gridColumns = gridRows = 60;
+        Graphics gtemp;
+        
+        // Calculate cell dimmensions
         cellWidth = windowWidth / gridColumns;
         cellHeight = windowHeight / gridRows;
 
@@ -54,11 +59,9 @@ public class LittyLife extends BasicGame
         }
         cells[22] = true;
         
-        // Prepare images of cells
-        cellImageAlive = new Image(cellWidth, cellHeight);
-        cellImageAlive.setImageColor(255, 255, 255);
-        cellImageDead = new Image(cellWidth, cellHeight);
-        cellImageDead.setImageColor(0, 0, 0);
+        // Prepare cell colors
+        cellColorAlive = new Color(0, 0, 0);
+        cellColorDead = new Color(255, 255, 255);
     }
     
     /**
@@ -77,20 +80,35 @@ public class LittyLife extends BasicGame
     @Override
     public void update(GameContainer gc, int i) throws SlickException {
         
+    
+        for (int i = 0; i < cells.length; i++) {
+            if (
+        }
     }
 
     /**
      * Graphically render the current state of the game.
+     *
+     * Instead of painting each individual cell, the dead cell color is painted
+     * across the window. Living cells are then drawn individually.
      */
     @Override
     public void render(GameContainer gc, Graphics g) throws SlickException {
+        g.setColor(cellColorDead);
+        g.fillRect(0, 0, windowWidth, windowHeight);
+        
+        // Draw living cells
+        g.setColor(cellColorAlive);
         for (int i = 0; i < gridColumns; i++) {
             for (int j = 0; j < gridColumns; j++) {
-                g.drawImage(
-                    isAlive(i, j) ? cellImageAlive : cellImageDead,
-                    i * cellWidth,
-                    j * cellHeight
-                );
+                if (isAlive(i, j)) {
+                    g.fillRect(
+                        i * cellWidth,
+                        j * cellHeight,
+                        cellWidth,
+                        cellHeight
+                    );
+                }
             }
         }
     }
