@@ -1,5 +1,7 @@
 package com.alexlitty.asynchrony.littylife;
 
+import java.util.Random;
+
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
@@ -46,22 +48,29 @@ public class LittyLife extends BasicGame
      */
     @Override
     public void init(GameContainer gc) throws SlickException {
-        Graphics gtemp;
-        
-        // Calculate cell dimmensions
+        Random gen = new Random();
+    
+        // Determine cell dimmensions
         cellWidth = windowWidth / gridColumns;
         cellHeight = windowHeight / gridRows;
 
-        // Create a grid of cells    
+        // Create grids of cells, all dead by default
+        cellsTemp = new boolean[gridColumns * gridRows];
         cells = new boolean[gridColumns * gridRows];
-        for (boolean c : cells) {
-            c = false;
+        for (int i = 0; i < cells.length; i++) {
+            cells[i] = gen.nextInt(2) == 0 ? true : false;
         }
-        cells[22] = true;
         
         // Prepare cell colors
-        cellColorAlive = new Color(0, 0, 0);
-        cellColorDead = new Color(255, 255, 255);
+        cellColorAlive = new Color(255, 150, 20);
+        cellColorDead = new Color(25, 25, 25);
+    }
+    
+    /**
+     *
+     */
+    public int cellIndex(int x, int y) {
+        return x + (y * gridColumns);
     }
     
     /**
@@ -69,20 +78,66 @@ public class LittyLife extends BasicGame
      *
      * Parameters are x and y coordinates where the cell should lie visually,
      * starting at (0, 0).
+     *
+     * If the coordinate is out of range of the grid, returns false.
      */
-    public boolean isAlive(int x, int y) {
+    protected boolean cellIsAlive(int x, int y) {
+        if (x < 0 || y < 0 || x > (gridColumns - 1) || y > (gridColumns - 1)) {
+            return false;
+        }
         return cells[x + (y * gridColumns)];
+    }
+    
+    /**
+     * Counts the live neighbors around a given cell.
+     */
+    protected int cellNeighbors(int x, int y) {
+        int neighbors = 0;
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i == 0 && j == 0) {
+                    continue;
+                }
+                if (cellIsAlive(x + i, y + j)) {
+                    neighbors++;
+                }
+            }
+        }
+        return neighbors;
     }
 
     /**
      * Perform an update on the current game logic.
      */
     @Override
-    public void update(GameContainer gc, int i) throws SlickException {
+    public void update(GameContainer gc, int delta) throws SlickException {
+        int neighbors, x;
         
-    
+        // Bring cells into the next generation
+        for (int i = 0; i < gridColumns; i++) {
+            for (int j = 0; j < gridRows; j++) {
+                x = cellIndex(i, j);
+                neighbors = cellNeighbors(i, j);
+                
+                // Live cell
+                if (cellIsAlive(i, j)) {
+                    if (neighbors < 2 || neighbors > 3) {
+                        cellsTemp[x] = false;
+                    } else {
+                        cellsTemp[x] = true;
+                    }
+                }
+                
+                // Dead cell
+                else {
+                    cellsTemp[x] = (neighbors == 3) ? true : false;
+                }
+            }
+        }
+        
+        // Bring next generation cells into current generation
         for (int i = 0; i < cells.length; i++) {
-            if (
+            cells[i] = cellsTemp[i];
         }
     }
 
@@ -101,7 +156,7 @@ public class LittyLife extends BasicGame
         g.setColor(cellColorAlive);
         for (int i = 0; i < gridColumns; i++) {
             for (int j = 0; j < gridColumns; j++) {
-                if (isAlive(i, j)) {
+                if (cellIsAlive(i, j)) {
                     g.fillRect(
                         i * cellWidth,
                         j * cellHeight,
@@ -122,6 +177,7 @@ public class LittyLife extends BasicGame
             AppGameContainer app;
             app = new AppGameContainer(new LittyLife("Litty's Game of Life"));
             app.setDisplayMode(windowWidth, windowHeight, false);
+            app.setTargetFrameRate(10);
             app.start();
         }
         catch (SlickException e) {
