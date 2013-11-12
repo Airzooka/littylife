@@ -20,10 +20,10 @@ lwjgl_util.jar
 Change the Java library path to:
 
 ```
-<x>/com/alexlitty/asynchrony/littylife/lib/natives/<y>
+(X)/com/alexlitty/asynchrony/littylife/lib/natives/(Y)
 ```
 
-Where <x> is the absolute path to the repository, and <y> is either _windows_, _mac_, or _linux_.
+Where (X) is the absolute path to the repository, and (Y) is either _windows_, _mac_, or _linux_.
 
 If you're not using an IDE, a compile command would look like this:
 
