@@ -31,7 +31,7 @@ If you're not using an IDE, a compile command would look like this:
 javac -cp .:com/alexlitty/asynchrony/littylife/lib/* com/alexlitty/asynchrony/littylife/LittyLife.java
 ```
 
-Play the game! I do recommend some breathing exercises and a therapist before you begin:
+Play the game!
 
 ```
 java -cp .:com/alexlitty/asynchrony/littylife/lib/* -Djava.library.path=x/com/alexlitty/asynchrony/littylife/lib/natives/y com/alexlitty/asynchrony/littylife/LittyLife
